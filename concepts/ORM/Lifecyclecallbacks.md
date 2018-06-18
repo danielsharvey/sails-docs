@@ -2,38 +2,40 @@
 
 ### Overview
 
-Lifecycle callbacks are functions that are automagically called before or after certain _model_ actions. For example, we sometimes use lifecycle callbacks to automatically encrypting a password before creating or updating an `Account` model.
+Lifecycle callbacks are functions that are called before or after certain model methods.  For example, you might use lifecycle callbacks to automatically compute the value of a `fullName` attribute before creating or updating a `User` record.
 
-Sails exposes a handful of lifecycle callbacks by default.
+Sails exposes a handful of lifecycle callbacks by default:
 
+##### Lifecycle callbacks on `.create()`
 
-##### Callbacks on `create`
+The `afterCreate` lifecycle callback will only be run on queries that have the `fetch` meta flag set to `true`. For more information on using the `meta` flags see [Waterline Queries](https://sailsjs.com/documentation/reference/waterline-orm/queries/meta).
 
-  - beforeValidate: fn(values, cb)
-  - afterValidate: fn(values, cb)
-  - beforeCreate: fn(values, cb)
-  - afterCreate: fn(newlyInsertedRecord, cb)
+  - beforeCreate: fn(recordToCreate, proceed)
+  - afterCreate: fn(newlyCreatedRecord, proceed)
 
-##### Callbacks on `update`
+> `beforeCreate()` is not run on bulk inserts of data using `createEach`.
 
-  - beforeValidate: fn(valuesToUpdate, cb)
-  - afterValidate: fn(valuesToUpdate, cb)
-  - beforeUpdate: fn(valuesToUpdate, cb)
-  - afterUpdate: fn(updatedRecord, cb)
+##### Lifecycle callbacks on `.update()`
 
-##### Callbacks on `destroy`
+The `afterUpdate` lifecycle callback will only be run on `.update()` queries that have the `fetch` meta flag set to `true`. For more information on using the `meta` flags see [Waterline Queries](https://sailsjs.com/documentation/reference/waterline-orm/queries/meta).
 
-  - beforeDestroy: fn(criteria, cb)
-  - afterDestroy: fn(destroyedRecords, cb)
+  - beforeUpdate: fn(valuesToSet, proceed)
+  - afterUpdate: fn(updatedRecord, proceed)
+
+##### Lifecycle callbacks on `.destroy()`
+
+The `afterDestroy` lifecycle callback will only be run on `.destroy()` queries that have the `fetch` meta flag set to `true`. For more information on using the `meta` flags see [Waterline Queries](https://sailsjs.com/documentation/reference/waterline-orm/queries/meta).
+
+  - beforeDestroy: fn(criteria, proceed)
+  - afterDestroy: fn(destroyedRecord, proceed)
 
 
 ### Example
 
-If you want to encrypt a password before saving in the database, you might use the `beforeCreate` lifecycle callback.
+If you want to hash a password before saving in the database, you might use the `beforeCreate` lifecycle callback.
 
 ```javascript
-var bcrypt = require('bcrypt');
-
+// User.js
 module.exports = {
 
   attributes: {
@@ -46,28 +48,23 @@ module.exports = {
     password: {
       type: 'string',
       minLength: 6,
-      required: true,
-      columnName: 'encrypted_password'
+      required: true
     }
 
   },
 
 
-  // Lifecycle Callbacks
-  beforeCreate: function (values, cb) {
-
-    // Encrypt password
-    bcrypt.hash(values.password, 10, function(err, hash) {
-      if(err) return cb(err);
-      values.password = hash;
-      //calling cb() with an argument returns an error. Useful for canceling the entire operation if some criteria fails.
-      cb();
-    });
+  beforeCreate: function (valuesToSet, proceed) {
+    // Hash password
+    sails.helpers.passwords.hashPassword(valuesToSet.password).exec((err, hashedPassword)=>{
+      if (err) { return proceed(err); }
+      valuesToSet.password = hashedPassword;
+      return proceed();
+    });//_∏_
   }
+  
 };
 ```
 
 
-<docmeta name="uniqueID" value="Lifecyclecallbacks631538">
 <docmeta name="displayName" value="Lifecycle callbacks">
-

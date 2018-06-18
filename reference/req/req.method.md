@@ -2,7 +2,7 @@
 The request method (aka "verb".)
 
 ### Usage
-```js
+```usage
 req.method;
 ```
 
@@ -26,6 +26,6 @@ req.method;
 
 
 
-<docmeta name="uniqueID" value="reqmethod305728">
-<docmeta name="displayName" value="req.method">
 
+<docmeta name="displayName" value="req.method">
+<docmeta name="pageType" value="property">

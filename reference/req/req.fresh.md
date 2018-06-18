@@ -5,7 +5,7 @@ A flag indicating the user-agent sending this request (`req`) wants "fresh" data
 If the request wants "fresh" data, usually you'll want to `.find()` fresh data from your models and send it back to the client.
 
 ### Usage
-```js
+```usage
 req.fresh;
 ```
 
@@ -27,6 +27,6 @@ if (req.fresh) {
 
 
 
-<docmeta name="uniqueID" value="reqfresh718346">
-<docmeta name="displayName" value="req.fresh">
 
+<docmeta name="displayName" value="req.fresh">
+<docmeta name="pageType" value="property">

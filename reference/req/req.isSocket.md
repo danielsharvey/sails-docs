@@ -4,17 +4,19 @@ A flag indicating whether or not this request (`req`) originated from a Socket.i
 
 
 ### Usage
-```js
+```usage
 req.isSocket;
 ```
 
 ### Example
 ```javascript
 if (req.isSocket){
-  // You're a socket.  Do cool socket stuff.
+  // You're a socket.  Do cool socket stuff like subscribing.
+  User.subscribe(req, [req.session.userId]);
 }
 else {
   // Just another HTTP request.
+  // (`req.isSocket` is undefined)
 }
 ```
 
@@ -32,6 +34,7 @@ else {
 
 
 
-<docmeta name="uniqueID" value="reqisSocket87074">
-<docmeta name="displayName" value="req.isSocket">
 
+
+<docmeta name="displayName" value="req.isSocket">
+<docmeta name="pageType" value="property">

@@ -2,7 +2,9 @@
 Sets the "Location" response header to the specified URL expression (`url`).
 
 ### Usage
+```usage
 res.location(url);
+```
 
 ### Example
 ```javascript
@@ -25,6 +27,6 @@ res.location('back');
 
 
 
-<docmeta name="uniqueID" value="reslocation779137">
-<docmeta name="displayName" value="res.location()">
 
+<docmeta name="displayName" value="res.location()">
+<docmeta name="pageType" value="method">

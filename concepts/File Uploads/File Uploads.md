@@ -1,4 +1,4 @@
-# File Uploads
+# File uploads
 
 Uploading files in Sails is similar to how you would upload files for a vanilla Node.js or Express application.  It is, however, probably different than what you're used to if you're coming from a different server-side platform like PHP, .NET, Python, Ruby, or Java.  But fear not: the core team has gone to great lengths to make file uploads easier to accomplish, while still keeping them scalable and secure.
 
@@ -18,7 +18,7 @@ req.file('avatar').upload(function (err, uploadedFiles) {
 });
 ```
 
-Files should be uploaded inside of an `action` in one of your controllers.  Here's a more in-depth example that demonstrates how you could allow users to upload an avatar image and associate it with their accounts.  It assumes you've already taken care of access control in a policy, and that you're storing the id of the logged-in user in `req.session.me`.
+Files should be uploaded inside of an [action](https://sailsjs.com/documentation/concepts/actions-and-controllers).  Here's a more in-depth example that demonstrates how you could allow users to upload an avatar image and associate it with their accounts.  It assumes you've already taken care of access control in a policy, and that you're storing the id of the logged-in user in `req.session.userId`.
 
 ```javascript
 // api/controllers/UserController.js
@@ -38,7 +38,7 @@ uploadAvatar: function (req, res) {
     maxBytes: 10000000
   },function whenDone(err, uploadedFiles) {
     if (err) {
-      return res.negotiate(err);
+      return res.serverError(err);
     }
 
     // If no files were uploaded, respond with an error.
@@ -46,18 +46,21 @@ uploadAvatar: function (req, res) {
       return res.badRequest('No file was uploaded');
     }
 
+    // Get the base URL for our deployed application from our custom config
+    // (e.g. this might be "http://foobar.example.com:1339" or "https://example.com")
+    var baseUrl = sails.config.custom.baseUrl;
 
     // Save the "fd" and the url where the avatar for a user can be accessed
-    User.update(req.session.me, {
+    User.update(req.session.userId, {
 
       // Generate a unique URL where the avatar can be downloaded.
-      avatarUrl: require('util').format('%s/user/avatar/%s', sails.getBaseUrl(), req.session.me),
+      avatarUrl: require('util').format('%s/user/avatar/%s', baseUrl, req.session.userId),
 
       // Grab the first file and use it's `fd` (file descriptor)
       avatarFd: uploadedFiles[0].fd
     })
     .exec(function (err){
-      if (err) return res.negotiate(err);
+      if (err) return res.serverError(err);
       return res.ok();
     });
   });
@@ -71,12 +74,8 @@ uploadAvatar: function (req, res) {
  */
 avatar: function (req, res){
 
-  req.validate({
-    id: 'string'
-  });
-
   User.findOne(req.param('id')).exec(function (err, user){
-    if (err) return res.negotiate(err);
+    if (err) return res.serverError(err);
     if (!user) return res.notFound();
 
     // User has no avatar image uploaded.
@@ -87,6 +86,9 @@ avatar: function (req, res){
 
     var SkipperDisk = require('skipper-disk');
     var fileAdapter = SkipperDisk(/* optional opts */);
+
+    // set the filename to the same file as the user uploaded
+    res.set("Content-disposition", "attachment; filename='" + file.name + "'");
 
     // Stream the file down
     fileAdapter.read(user.avatarFd)
@@ -113,15 +115,19 @@ In the above example we upload the file to .tmp/uploads. So how do we configure 
 
 ```javascript
 req.file('avatar').upload({
-  dirname: require('path').resolve(sails.config.appPath, '/assets/images')
+  dirname: require('path').resolve(sails.config.appPath, 'assets/images')
 },function (err, uploadedFiles) {
-  if (err) return res.negotiate(err);
+  if (err) return res.serverError(err);
 
   return res.json({
     message: uploadedFiles.length + ' file(s) uploaded successfully!'
   });
 });
 ```
+
+### Sending text parameters in the same form as a file upload
+
+As mentioned above, you can send text parameters like "name" and "email" to your Sails action along with your file upload field.  However, the text fields _must appear before any file fields_ in your form in order for them to be processed.  This is critical to Sails' ability to run your action code while files are uploading (rather than having to wait for them to finish). See the [Skipper docs](https://github.com/balderdashy/skipper#text-parameters) for more info.
 
 ### Example
 
@@ -174,30 +180,12 @@ module.exports = {
 };
 ```
 
-#### Where do they go?
-When using the default `receiver`, file uploads go to the `myApp/.tmp/uploads/` directory.  You can do whatever you want with it in the `upload` action.
-
-#### Uploading to a custom folder
-In the above example we could upload the file to .tmp/uploads . So how do we configure it with a custom folder , say ‘assets/images’. We can achieve this by adding options to upload function as shown below.
-
-```javascript
-req.file('avatar').upload({
-  dirname: './assets/images'
-},function (err, uploadedFiles) {
-  if (err) return res.negotiate(err);
-
-  return res.json({
-    message: uploadedFiles.length + ' file(s) uploaded successfully!'
-  });
-});
-```
-
 ## Read more
 
 + [Skipper docs](https://github.com/balderdashy/skipper)
-+ [Uploading to Amazon S3](http://sailsjs.org/documentation/concepts/File-Uploads/uploading-to-amazon-s3.html)
-+ [Uploading to Mongo GridFS](http://sailsjs.org/documentation/concepts/File-Uploads/uploading-to-mongo-gridfs.html)
++ [Uploading to Amazon S3](https://sailsjs.com/documentation/concepts/file-uploads/uploading-to-s-3)
++ [Uploading to Mongo GridFS](https://sailsjs.com/documentation/concepts/file-uploads/uploading-to-grid-fs)
 
 
 
-<docmeta name="displayName" value="File Uploads">
+<docmeta name="displayName" value="File uploads">

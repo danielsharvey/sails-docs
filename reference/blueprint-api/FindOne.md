@@ -1,68 +1,49 @@
-# Find One
+# Find One (Blueprint)
 
-Returns a single record from the model as a JSON Object.
+Look up the record with the specified `id` from the database and (if possible) subscribe to the record to hear about any future changes.
 
-```
+```usage
 GET /:model/:id
 ```
 
-<!--
-<table>
-  <thead>
-    <tr>
-      <th colspan="2">Blueprint Routes</th>
-    </tr>
-    <tr>
-      <th>Type</th>
-      <th>URL</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>REST</td>
-      <td>
-        <code>GET /:modelIdentity/:id</code>
-      </td>
-    </tr>
-    <tr>
-      <td>Shortcut</td>
-      <td>
-        <code>GET /:modelIdentity/findOne/:id</code>
-      </td>
-    </tr>
-  </tbody>
-</table>
--->
 
-The **findOne()** blueprint action returns a single record from the model (given by `:modelIdentity`) as a JSON object. The specified `id` is the [primary key](http://en.wikipedia.org/wiki/Unique_key) of the desired record.
+The **findOne()** blueprint action returns a single record from the model (given by `:model`) as a JSON object. The specified `id` is the [primary key](http://en.wikipedia.org/wiki/Unique_key) of the desired record.
 
-If the action was triggered via a socket request, the requesting socket will be "subscribed" to the returned record. If the record is subsequently updated or deleted, a message will be sent to that socket's client informing them of the change. See the docs for [.subscribe()](http://sailsjs.org/documentation/reference/websockets/resourceful-pubsub/subscribe.html) for more info.
+If the action was triggered via a socket request, the requesting socket will be "subscribed" to the returned record. If the record is subsequently updated or deleted, a message will be sent to that socket's client informing them of the change. See the docs for [.subscribe()](https://sailsjs.com/documentation/reference/web-sockets/resourceful-pub-sub/subscribe) for more info.
 
 
 ### Parameters
 
  Parameter                          | Type                                    | Details
  ---------------------------------- | --------------------------------------- |:---------------------------------
- id<br/>*(required)*                | ((number))<br/>*-or-*<br/>((string))    | The desired record's primary key value<br/><br/>e.g. `/product/7`
- callback                           | ((string))                              | If specified, a JSONP response will be sent (instead of JSON). This is the name of the client-side javascript function to call, passing results as the first (and only) argument<br/> <br/> e.g. `?callback=myJSONPHandlerFn`
+ model          | ((string))   | The [identity](https://sailsjs.com/documentation/concepts/models-and-orm/model-settings#?identity) of the containing model.<br/><br/>e.g. `'purchase'` (in `/purchase/7`)
+ id                | ((string))    | The desired target record's primary key value<br/><br/>e.g. `'7'` (in `/purchase/7`).
+ _populate_       | ((string))    | If specified, overide the default automatic population process. Accepts a comma separated list of attributes names for which to populate record values. See [here](https://sailsjs.com/documentation/concepts/models-and-orm/records#?populated-values) for more information on how the population process fills out attributes in the returned record according to the model's defined associations.
+ _select_         | ((string?))   | The attributes to include in the result, specified as a comma-delimited list.  By default, all attributes are selected.  Not valid for plural (&ldquo;collection&rdquo;) association attributes.<br/> <br/> e.g. `?select=name,age`.
+ _omit_           | ((string?))   | The attributes to exclude from the result, specified as a comma-delimited list.  Cannot be used in conjuction with `select`.    Not valid for plural (&ldquo;collection&rdquo;) association attributes.<br/> <br/> e.g. `?omit=favoriteColor,address`.
+
 
 ### Example
-Find the purchase with ID #1, E.g. `http://localhost:1337/purchase/1`
+Find the purchase with id #1:
 
-#### Route
-`GET /purchase/1`
+```text
+GET /purchase/1
+```
 
+[![Run in Postman](https://s3.amazonaws.com/postman-static/run-button.png)](https://www.getpostman.com/run-collection/96217d0d747e536e49a4)
 
-#### Expected Response
+##### Expected Response
 
  ```json
  {
    "amount": 49.99,
    "id": 1,
-   "createdAt": "2013-10-18T01:22:56.000Z",
-   "updatedAt": "2013-10-18T01:22:56.000Z"
+   "createdAt": 1485551132315,
+   "updatedAt": 1485551132315
  }
  ```
 
-<docmeta name="uniqueID" value="FindOne259267">
+
 <docmeta name="displayName" value="find one">
+<docmeta name="pageType" value="endpoint">
+

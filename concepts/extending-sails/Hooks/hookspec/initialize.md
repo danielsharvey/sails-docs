@@ -21,7 +21,7 @@ initialize: function(cb) {
 
 ##### Hook timeout settings
 
-By default, hooks have ten seconds to complete their `initialize` function and call `cb` before Sails throws an error.  That timeout can be configured by setting the `_hookTimeout` key to the number of milliseconds that Sails should wait.  This can be done in the hook&rsquo;s [`defaults`](http://sailsjs.org/documentation/concepts/extending-sails/Hooks/hookspec/defaults.html):
+By default, hooks have ten seconds to complete their `initialize` function and call `cb` before Sails throws an error.  That timeout can be configured by setting the `_hookTimeout` key to the number of milliseconds that Sails should wait.  This can be done in the hook&rsquo;s [`defaults`](https://sailsjs.com/documentation/concepts/extending-sails/hooks/hook-specification/defaults):
 
 ```
 defaults: {
@@ -56,7 +56,7 @@ initialize: function(cb) {
       // Then call cb()
       return cb();
 
-   }
+   });
 }
 ```
 
@@ -72,10 +72,10 @@ initialize: function(cb) {
       // Then call cb()
       return cb();
 
-   }
+   });
 }
 ```
 
-<docmeta name="uniqueID" value="Hooks75005">
+
 <docmeta name="displayName" value=".initialize()">
 <docmeta name="stabilityIndex" value="3">

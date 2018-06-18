@@ -3,7 +3,7 @@
 Sends a JSON response composed of a stringified version of the specified `data`.
 
 ### Usage
-```js
+```usage
 return res.json([statusCode, ] data);
 ```
 
@@ -24,6 +24,6 @@ res.json(500, { error: 'message' })
 
 
 
-<docmeta name="uniqueID" value="resjson72272">
-<docmeta name="displayName" value="res.json()">
 
+<docmeta name="displayName" value="res.json()">
+<docmeta name="pageType" value="method">

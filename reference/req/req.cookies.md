@@ -3,7 +3,7 @@ An object containing all of the [**unsigned cookies**](https://github.com/balder
 
 
 ### Usage
-```javascript
+```usage
 req.cookies;
 ```
 
@@ -22,6 +22,6 @@ req.cookies.chocolatechip;
 
 
 
-<docmeta name="uniqueID" value="reqcookies576909">
-<docmeta name="displayName" value="req.cookies">
 
+<docmeta name="displayName" value="req.cookies">
+<docmeta name="pageType" value="property">
